@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>校园环保行动站</title>
+  <style>
+    /* ===== 基础样式重置 ===== */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: "Microsoft YaHei", "PingFang SC", Arial, sans-serif;
+      background-color: #f0f9f0;
+      color: #2d4a2d;
+      line-height: 1.8;
+    }
+
+    /* ===== 页面显示控制：只显示当前页 ===== */
+    .page {
+      display: none;
+    }
+    .page.active {
+      display: block;
+    }
+
+    /* ===== 导航栏 ===== */
+    nav {
+      background: linear-gradient(90deg, #2e7d32, #1565c0);
+      padding: 0 20px;
+      position: sticky;
+      top: 0;
+      z-index: 999;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    }
+
+    .nav-inner {
+      max-width: 960px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 8px;
+      padding: 12px 0;
+    }
+
+    .nav-logo {
+      font-size: 1.2rem;
+      font-weight: bold;
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .nav-logo span.leaf {
+      font-size: 1.5rem;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    /* 导航按钮 */
+    .nav-btn {
+      background: rgba(255,255,255,0.15);
+      color: #ffffff;
+      border: 2px solid rgba(255,255,255,0.4);
+      padding: 7px 18px;
+      border-radius: 20px;
+      cursor: pointer;
+      font-size: 0.95rem;
+      font-family: inherit;
+      transition: background 0.2s, transform 0.1s;
+    }
+
+    .nav-btn:hover, .nav-btn.current {
+      background: rgba(255,255,255,0.35);
+      transform: scale(1.04);
+    }
+
+    /* ===== 通用容器 ===== */
+    .container {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 30px 20px;
+    }
+
+    /* ===== 页面横幅 Hero ===== */
+    .hero {
+      background: linear-gradient(135deg, #a5d6a7 0%, #80deea 50%, #b3e5fc 100%);
+      text-align: center;
+      padding: 60px 20px 50px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::before {
+      content: "🌿🌱🌍🌊🍃";
+      font-size: 2rem;
+      position: absolute;
+      top: 10px;
+      left: 0;
+      right: 0;
+      letter-spacing: 20px;
+      opacity: 0.3;
+    }
+
+    .hero h1 {
+      font-size: 2.4rem;
+      color: #1b5e20;
+      text-shadow: 1px 2px 4px rgba(255,255,255,0.6);
+      margin-bottom: 12px;
+    }
+
+    .hero p {
+      font-size: 1.1rem;
+      color: #0d47a1;
+      max-width: 600px;
+      margin: 0 auto 24px;
+    }
+
+    /* ===== 大按钮 ===== */
+    .big-btn {
+      display: inline-block;
+      background: linear-gradient(90deg, #2e7d32, #1565c0);
+      color: #fff;
+      border: none;
+      padding: 14px 36px;
+      border-radius: 30px;
+      font-size: 1.05rem;
+      font-family: inherit;
+      cursor: pointer;
+      margin: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      transition: transform 0.15s, box-shadow 0.15s;
+    }
+
+    .big-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 18px rgba(0,0,0,0.25);
+    }
+
+    /* ===== 卡片区域 ===== */
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 24px;
+      margin-top: 30px;
+    }
+
+    .card {
+      background: #ffffff;
+      border-radius: 16px;
+      padding: 24px;
+      box-shadow: 0 3px 14px rgba(46,125,50,0.12);
+      border-top: 4px solid #66bb6a;
+      transition: transform 0.2s;
+    }
+
+    .card:hover {
+      transform: translateY(-4px);
+    }
+
+    .card .icon {
+      font-size: 2.5rem;
+      margin-bottom: 10px;
+    }
+
+    .card h3 {
+      font-size: 1.15rem;
+      color: #1b5e20;
+      margin-bottom: 8px;
+    }
+
+    .card p {
+      font-size: 0.95rem;
+      color: #4a6741;
+    }
+
+    /* ===== 分区标题 ===== */
+    .section-title {
+      font-size: 1.6rem;
+      color: #1b5e20;
+      text-align: center;
+      margin: 40px 0 10px;
+      position: relative;
+    }
+
+    .section-title::after {
+      content: "";
+      display: block;
+      width: 60px;
+      height: 4px;
+      background: linear-gradient(90deg, #66bb6a, #29b6f6);
+      border-radius: 2px;
+      margin: 8px auto 0;
+    }
+
+    .section-sub {
+      text-align: center;
+      color: #5c8a5c;
+      font-size: 0.95rem;
+      margin-bottom: 20px;
+    }
+
+    /* ===== 横幅图片模拟（用 CSS 渐变代替真实图片）===== */
+    .fake-photo {
+      border-radius: 14px;
+      overflow: hidden;
+      margin: 14px 0;
+      position: relative;
+      text-align: center;
+    }
+
+    .fake-photo .photo-bg {
+      width: 100%;
+      height: 200px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 4rem;
+      border-radius: 14px;
+    }
+
+    .photo-caption {
+      background: rgba(255,255,255,0.9);
+      padding: 8px 14px;
+      font-size: 0.9rem;
+      color: #2e7d32;
+      font-weight: bold;
+      border-radius: 0 0 14px 14px;
+    }
+
+    /* ===== 环保知识页样式 ===== */
+    .knowledge-block {
+      background: #ffffff;
+      border-radius: 16px;
+      padding: 28px;
+      margin: 20px 0;
+      box-shadow: 0 3px 14px rgba(21,101,192,0.1);
+      border-left: 6px solid #29b6f6;
+    }
+
+    .knowledge-block.green-border {
+      border-left-color: #66bb6a;
+    }
+
+    .knowledge-block h2 {
+      font-size: 1.35rem;
+      color: #0d47a1;
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .knowledge-block.green-border h2 {
+      color: #1b5e20;
+    }
+
+    .tip-list {
+      list-style: none;
+      padding: 0;
+    }
+
+    .tip-list li {
+      padding: 9px 0 9px 28px;
+      position: relative;
+      border-bottom: 1px dashed #c8e6c9;
+      font-size: 0.97rem;
+      color: #3a5a3a;
+    }
+
+    .tip-list li:last-child {
+      border-bottom: none;
+    }
+
+    .tip-list li::before {
+      content: "✅";
+      position: absolute;
+      left: 0;
+      top: 9px;
+    }
+
+    /* 垃圾分类彩色卡片 */
+    .trash-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 14px;
+      margin-top: 16px;
+    }
+
+    .trash-card {
+      border-radius: 12px;
+      padding: 18px 14px;
+      text-align: center;
+      color: #fff;
+      font-weight: bold;
+    }
+
+    .trash-card .trash-icon {
+      font-size: 2.2rem;
+      margin-bottom: 8px;
+    }
+
+    .trash-card h4 {
+      font-size: 1rem;
+      margin-bottom: 6px;
+    }
+
+    .trash-card p {
+      font-size: 0.82rem;
+      opacity: 0.92;
+      font-weight: normal;
+    }
+
+    .tc-blue   { background: linear-gradient(135deg, #1976d2, #42a5f5); }
+    .tc-green  { background: linear-gradient(135deg, #2e7d32, #66bb6a); }
+    .tc-red    { background: linear-gradient(135deg, #c62828, #ef5350); }
+    .tc-gray   { background: linear-gradient(135deg, #546e7a, #90a4ae); }
+
+    /* ===== 活动展示页样式 ===== */
+    .activity-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 24px;
+      margin-top: 20px;
+    }
+
+    .activity-card {
+      background: #ffffff;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 3px 14px rgba(46,125,50,0.13);
+      transition: transform 0.2s;
+    }
+
+    .activity-card:hover {
+      transform: translateY(-5px);
+    }
+
+    .activity-photo {
+      width: 100%;
+      height: 170px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 4.5rem;
+    }
+
+    .activity-info {
+      padding: 16px 18px;
+    }
+
+    .activity-info h3 {
+      font-size: 1.05rem;
+      color: #1b5e20;
+      margin-bottom: 6px;
+    }
+
+    .activity-info p {
+      font-size: 0.9rem;
+      color: #5c7a5c;
+    }
+
+    .activity-tag {
+      display: inline-block;
+      background: #e8f5e9;
+      color: #2e7d32;
+      border-radius: 10px;
+      padding: 3px 10px;
+      font-size: 0.8rem;
+      margin-top: 8px;
+    }
+
+    /* ===== 倡议书区域 ===== */
+    .pledge-box {
+      background: linear-gradient(135deg, #e8f5e9, #e3f2fd);
+      border-radius: 18px;
+      padding: 36px 30px;
+      margin: 30px 0;
+      text-align: center;
+      border: 2px dashed #66bb6a;
+      position: relative;
+    }
+
+    .pledge-box::before {
+      content: "🌍";
+      font-size: 3rem;
+      display: block;
+      margin-bottom: 10px;
+    }
+
+    .pledge-box h2 {
+      font-size: 1.5rem;
+      color: #1b5e20;
+      margin-bottom: 16px;
+    }
+
+    .pledge-box p {
+      font-size: 0.97rem;
+      color: #2d4a2d;
+      max-width: 600px;
+      margin: 0 auto 12px;
+      line-height: 2;
+    }
+
+    .pledge-sign {
+      margin-top: 20px;
+      font-size: 0.95rem;
+      color: #1565c0;
+      font-style: italic;
+    }
+
+    /* ===== 返回首页按钮 ===== */
+    .back-btn-wrap {
+      text-align: center;
+      padding: 30px 0 10px;
+    }
+
+    .back-btn {
+      background: #ffffff;
+      color: #2e7d32;
+      border: 2px solid #66bb6a;
+      padding: 11px 30px;
+      border-radius: 25px;
+      font-size: 0.97rem;
+      font-family: inherit;
+      cursor: pointer;
+      transition: background 0.2s, color 0.2s;
+      margin: 6px;
+    }
+
+    .back-btn:hover {
+      background: #2e7d32;
+      color: #fff;
+    }
+
+    /* ===== 页脚 ===== */
+    footer {
+      background: linear-gradient(90deg, #1b5e20, #0d47a1);
+      color: rgba(255,255,255,0.85);
+      text-align: center;
+      padding: 22px 16px;
+      font-size: 0.9rem;
+      margin-top: 40px;
+    }
+
+    footer span {
+      display: block;
+      margin-top: 4px;
+      font-size: 0.82rem;
+      opacity: 0.7;
+    }
+
+    /* ===== 分隔线 ===== */
+    .divider {
+      height: 3px;
+      background: linear-gradient(90deg, #66bb6a, #29b6f6, #66bb6a);
+      border: none;
+      border-radius: 2px;
+      margin: 30px 0;
+    }
+
+    /* ===== 响应式适配 ===== */
+    @media (max-width: 600px) {
+      .hero h1 { font-size: 1.7rem; }
+      .nav-logo { font-size: 1rem; }
+      .pledge-box { padding: 24px 16px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ===== 导航栏（所有页面共用）===== -->
+  <nav>
+    <div class="nav-inner">
+      <div class="nav-logo">
+        <span class="leaf">🌿</span> 校园环保行动站
+      </div>
+      <div class="nav-links">
+        <button class="nav-btn" id="btn-nav-home">🏠 首页</button>
+        <button class="nav-btn" id="btn-nav-knowledge">📚 环保知识</button>
+        <button class="nav-btn" id="btn-nav-activity">🎉 活动展示</button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ===================== 第一页：首页 ===================== -->
+  <div class="page active" id="page-home">
+
+    <!-- 横幅 -->
+    <div class="hero">
+      <h1>🌱 校园环保行动站</h1>
+      <p>从我做起，从校园做起，让绿色成为我们共同的颜色！</p>
+      <button class="big-btn" id="btn-to-knowledge">📚 了解环保知识</button>
+      <button class="big-btn" id="btn-to-activity">🎉 查看班级活动</button>
+    </div>
+
+    <div class="container">
+
+      <!-- 网站介绍 -->
+      <h2 class="section-title">欢迎来到我们的环保站</h2>
+      <p class="section-sub">这里是我们班的环保宣传阵地，希望大家一起行动起来！</p>
+
+      <!-- 图片展示区 -->
+      <div class="card-grid">
+        <div class="fake-photo">
+          <div class="photo-bg" style="background: linear-gradient(135deg,#a5d6a7,#69f0ae);">🌳</div>
+          <div class="photo-caption">校园的大树，见证我们的成长</div>
+        </div>
+        <div class="fake-photo">
+          <div class="photo-bg" style="background: linear-gradient(135deg,#80deea,#40c4ff);">💧</div>
+          <div class="photo-caption">节约每一滴水，珍惜水资源</div>
+        </div>
+        <div class="fake-photo">
+          <div class="photo-bg" style="background: linear-gradient(135deg,#ffe082,#ffcc02);">♻️</div>
+          <div class="photo-caption">垃圾分类，从我班开始</div>
+        </div>
+      </div>
+
+      <hr class="divider">
+
+      <!-- 三个亮点卡片 -->
+      <h2 class="section-title">我们在做什么？</h2>
+      <p class="section-sub">小小行动，大大改变</p>
+
+      <div class="card-grid">
+        <div class="card">
+          <div class="icon">💧</div>
+          <h3>节约用水</h3>
+          <p>水是生命之源。我们学习正确用水习惯，杜绝浪费，让每一滴水都用在刀刃上。</p>
+        </div>
+        <div class="card">
+          <div class="icon">🗑️</div>
+          <h3>垃圾分类</h3>
+          <p>可回收、有害、湿垃圾、干垃圾，分得准确才能让垃圾变废为宝，保护我们的地球。</p>
+        </div>
+        <div class="card">
+          <div class="icon">🌿</div>
+          <h3>绿色校园</h3>
+          <p>爱护花草树木，减少一次性用品的使用，共同守护我们美丽的校园环境。</p>
+        </div>
+        <div class="card">
+          <div class="icon">📢</div>
+          <h3>环保宣传</h3>
+          <p>制作宣传海报、开展主题班会，让更多同学、家长了解环保的重要性。</p>
+        </div>
+        <div class="card">
+          <div class="icon">🌍</div>
+          <h3>低碳生活</h3>
+          <p>步行或骑车上学、少用空调、节约用电，每个小习惯都在为地球减负。</p>
+        </div>
+        <div class="card">
+          <div class="icon">🤝</div>
+          <h3>全员参与</h3>
+          <p>同学、老师、家长携手合作，让环保理念走出课堂，融入每一天的生活。</p>
+        </div>
+      </div>
+
+      <!-- 跳转按钮 -->
+      <div class="back-btn-wrap">
+        <button class="big-btn" id="btn-home-to-knowledge">📚 去环保知识页 →</button>
+        <button class="big-btn" id="btn-home-to-activity">🎉 去活动展示页 →</button>
+      </div>
+
+    </div>
+
+    <!-- 页脚 -->
+    <footer>
+      🌿 校园环保行动站 — 为地球加油！
+      <span>本网站由同学们共同制作 · 绿色·健康·未来</span>
+    </footer>
+  </div><!-- end page-home -->
+
+
+  <!-- ===================== 第二页：环保知识 ===================== -->
+  <div class="page" id="page-knowledge">
+
+    <div class="hero">
+      <h1>📚 环保知识大课堂</h1>
+      <p>学知识、懂环保，让绿色智慧陪伴我们每一天！</p>
+    </div>
+
+    <div class="container">
+
+      <!-- 节约用水 -->
+      <h2 class="section-title">💧 节约用水</h2>
+      <p class="section-sub">地球上可直接饮用的淡水不到 1%，节水刻不容缓！</p>
+
+      <div class="knowledge-block">
+        <h2>🚰 为什么要节约用水？</h2>
+        <p>
+          地球表面约 71% 是水，但绝大多数是海水，淡水资源极其有限。我国是全球人均水资源量较少的国家之一。
+          如果我们不注意节约，未来可能面临严重的水资源短缺问题。<strong>节约用水，从现在就要行动！</strong>
+        </p>
+      </div>
+
+      <div class="knowledge-block green-border">
+        <h2>✅ 校园和家庭节水小妙招</h2>
+        <ul class="tip-list">
+          <li>洗手、刷牙时随手关闭水龙头，不让水白白流走</li>
+          <li>发现水龙头滴水要及时报告老师或家长进行维修</li>
+          <li>洗菜、淘米的水可以收集起来浇花或冲厕所</li>
+          <li>洗澡时尽量缩短时间，避免长时间开着热水等水热</li>
+          <li>使用洗衣机时，尽量等衣物积累到足量再洗，避免少量多次</li>
+          <li>下雨天可以用容器收集雨水，用来浇灌植物</li>
+          <li>看到同学浪费水时，友善地提醒他们</li>
+        </ul>
+      </div>
+
+      <div class="knowledge-block">
+        <h2>📊 一组让你惊讶的数据</h2>
+        <div class="card-grid" style="margin-top:10px;">
+          <div class="card" style="border-top-color:#29b6f6; text-align:center;">
+            <div class="icon">🚿</div>
+            <h3>每次淋浴</h3>
+            <p>平均用水 <strong style="color:#0d47a1; font-size:1.3rem;">40–60</strong> 升，缩短 1 分钟可节省约 10 升</p>
+          </div>
+          <div class="card" style="border-top-color:#29b6f6; text-align:center;">
+            <div class="icon">🪥</div>
+            <h3>刷牙不关水</h3>
+            <p>2 分钟内流走约 <strong style="color:#0d47a1; font-size:1.3rem;">12</strong> 升水，相当于一大桶饮用水</p>
+          </div>
+          <div class="card" style="border-top-color:#29b6f6; text-align:center;">
+            <div class="icon">💦</div>
+            <h3>一个滴水龙头</h3>
+            <p>一天浪费约 <strong style="color:#0d47a1; font-size:1.3rem;">70</strong> 升水，一年约 25000 升！</p>
+          </div>
+        </div>
+      </div>
+
+      <hr class="divider">
+
+      <!-- 垃圾分类 -->
+      <h2 class="section-title">♻️ 垃圾分类</h2>
+      <p class="section-sub">垃圾分对了，就是宝贝；分错了，就是污染！</p>
+
+      <div class="knowledge-block green-border">
+        <h2>🗑️ 四大垃圾类别，你分清了吗？</h2>
+        <div class="trash-grid">
+          <div class="trash-card tc-blue">
+            <div class="trash-icon">📦</div>
+            <h4>可回收垃圾</h4>
+            <p>纸张、塑料瓶、玻璃、金属、旧衣物等，可重新利用</p>
+          </div>
+          <div class="trash-card tc-green">
+            <div class="trash-icon">🥦</div>
+            <h4>湿垃圾（厨余）</h4>
+            <p>剩饭剩菜、果皮、茶叶、骨头等，可堆肥处理</p>
+          </div>
+          <div class="trash-card tc-red">
+            <div class="trash-icon">🔋</div>
+            <h4>有害垃圾</h4>
+            <p>废电池、废灯管、过期药品等，需专门无害化处理</p>
+          </div>
+          <div class="trash-card tc-gray">
+            <div class="trash-icon">🗃️</div>
+            <h4>干垃圾（其他）</h4>
+            <p>受污染的纸、烟蒂、尘土等，以上三类之外的垃圾</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="knowledge-block">
+        <h2>✅ 垃圾分类行动指南</h2>
+        <ul class="tip-list">
+          <li>在家中准备 2–4 个不同颜色的垃圾桶，养成分类投放习惯</li>
+          <li>废旧电池一定要放入红色有害垃圾桶，不能随意丢弃</li>
+          <li>喝完的塑料瓶压扁后放入可回收桶，节省空间</li>
+          <li>剩菜剩饭沥干水分后再投入湿垃圾桶，减少异味</li>
+          <li>在学校看到垃圾要主动捡起，投入正确分类的垃圾桶</li>
+          <li>带动家人一起学习垃圾分类知识，从家庭做起</li>
+          <li>参与学校组织的"旧物置换"活动，给二手物品新生命</li>
+        </ul>
+      </div>
+
+      <!-- 小测验提示 -->
+      <div class="pledge-box" style="margin-top:20px;">
+        <h2>💡 环保小挑战</h2>
+        <p>今天起，坚持做到以下三件事：</p>
+        <p>⭐ 每次洗手后随手关紧水龙头<br>
+           ⭐ 每天正确分类投放至少一次垃圾<br>
+           ⭐ 把今天学到的知识告诉一位家人或朋友</p>
+        <p class="pledge-sign">——坚持 21 天，养成绿色好习惯！💪</p>
+      </div>
+
+      <!-- 返回和跳转按钮 -->
+      <div class="back-btn-wrap">
+        <button class="back-btn" id="btn-k-home">🏠 返回首页</button>
+        <button class="big-btn" id="btn-k-activity">🎉 去看班级活动 →</button>
+      </div>
+
+    </div>
+
+    <footer>
+      🌿 校园环保行动站 — 为地球加油！
+      <span>本网站由同学们共同制作 · 绿色·健康·未来</span>
+    </footer>
+  </div><!-- end page-knowledge -->
+
+
+  <!-- ===================== 第三页：活动展示 ===================== -->
+  <div class="page" id="page-activity">
+
+    <div class="hero">
+      <h1>🎉 班级环保活动展示</h1>
+      <p>我们的行动，我们的骄傲！每一次参与都是对地球的一份承诺。</p>
+    </div>
+
+    <div class="container">
+
+      <h2 class="section-title">📸 活动照片集锦</h2>
+      <p class="section-sub">记录我们一起保护环境的美好瞬间</p>
+
+      <div class="activity-grid">
+
+        <!-- 活动卡片 1 -->
+        <div class="activity-card">
+          <div class="
